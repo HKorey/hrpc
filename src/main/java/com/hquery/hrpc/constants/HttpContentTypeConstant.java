@@ -1,12 +1,21 @@
 package com.hquery.hrpc.constants;
 
+import lombok.Getter;
+
 /**
  * ContentType
+ *
  * @author hquery.huang
  */
 public enum HttpContentTypeConstant {
-    JSON(0, "application/json; charset=UTF-8"), URLENCODED(1, "application/x-www-form-urlencoded;charset=UTF-8");
+
+    JSON(0, "application/json; charset=UTF-8"),
+    URLENCODED(1, "application/x-www-form-urlencoded;charset=UTF-8");
+
+    @Getter
     private int code;
+
+    @Getter
     private String name;
 
     HttpContentTypeConstant(int code, String name) {
@@ -14,7 +23,12 @@ public enum HttpContentTypeConstant {
         this.name = name;
     }
 
-    // 普通方法
+    /**
+     * 普通方法
+     *
+     * @param index
+     * @return
+     */
     public static String getName(int index) {
         for (HttpContentTypeConstant c : HttpContentTypeConstant.values()) {
             if (c.getCode() == index) {
@@ -22,21 +36,5 @@ public enum HttpContentTypeConstant {
             }
         }
         return null;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.hquery</groupId>
-	<artifactId>hrpc-common</artifactId>
+	<artifactId>hrpc</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -15,7 +15,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 
 	<properties>
@@ -43,14 +43,20 @@
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>4.1.16.Final</version>
+			<version>4.1.6.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>hessian</artifactId>
 			<version>4.0.38</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>

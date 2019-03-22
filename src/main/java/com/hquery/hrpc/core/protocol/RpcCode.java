@@ -1,5 +1,7 @@
 package com.hquery.hrpc.core.protocol;
 
+import com.hquery.hrpc.constants.GlobalConstants;
+
 import java.io.IOException;
 
 /**
@@ -12,6 +14,7 @@ public class RpcCode {
     private Serializer serialize;
 
     private RpcCode() {
+        serialize = GlobalConstants.SERIALIZER;
     }
 
     public RpcCode(Serializer serialize) {

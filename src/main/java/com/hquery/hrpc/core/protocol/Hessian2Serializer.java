@@ -14,13 +14,12 @@ public class Hessian2Serializer implements Serializer {
 
     @Override
     public byte[] serialize(Object data) throws IOException {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream;) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
             Hessian2Output out = new Hessian2Output(bos);
             out.writeObject(data);
             out.flush();
             return bos.toByteArray();
         }
-        return null;
     }
 
     @Override

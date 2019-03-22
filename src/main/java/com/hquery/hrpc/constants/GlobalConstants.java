@@ -1,5 +1,8 @@
 package com.hquery.hrpc.constants;
 
+import com.hquery.hrpc.core.protocol.Hessian2Serializer;
+import com.hquery.hrpc.core.protocol.Serializer;
+import lombok.extern.slf4j.Slf4j;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -8,6 +11,7 @@ import java.lang.reflect.Field;
  * @author hquery.huang
  * 2018/5/3 16:48
  */
+@Slf4j
 public class GlobalConstants {
 
     private static Unsafe UNSAFE = null;
@@ -21,30 +25,37 @@ public class GlobalConstants {
             f.setAccessible(true);
             UNSAFE = (Unsafe) f.get(null);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("error", e);
         }
-    }
-    public static Field getGlobalMapField() {
-        try {
-            return GlobalConstants.class.getDeclaredField("globalMap");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
-    public static long getFieldOffset(Field field) {
-        if (field == null) {
-            return 0L;
-        }
-        return UNSAFE.staticFieldOffset(field);
-    }
+    public static String DEFAULT_VERSION = "1.0";
 
-    public Object getStaticFieldBase(Field field) {
-        if (field == null) {
-            return null;
-        }
-        return UNSAFE.staticFieldBase(field);
-    }
+    public static int RPC_TIMEOUT = 30000;
+
+    public static int NODE_ID = 1;
+
+    /**
+     * 获取可用CPU个数
+     */
+    public static int EXECUTOR_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 2;
+
+    //	public static Serializer SERIALIZER = new JdkSerializer() ;
+
+//	public static Serializer SERIALIZER = KryoSerializer.getInstance() ;
+
+    public static Serializer SERIALIZER = new Hessian2Serializer();
+
+//	public static Serializer SERIALIZER = new ProtostuffSerializer() ;
+
+    public static int ZK_SESSION_TIMEOUT = 5000;
+
+    public static String ZK_ADDRESS = "192.168.102.101:2181";
+
+    public static String ZK_REGISTRY_PATH = "/rpc/data";
+
+    public static String ZK_SERVER_PATH = "/providers";
+
+    public static String ZK_CLIENT_PATH = "/consumers";
 
 }

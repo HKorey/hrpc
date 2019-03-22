@@ -22,7 +22,7 @@ public class RpcClient {
 
     public void init(String host, int port) {
         this.rpcProxy = new RpcProxy();
-        this.rpcConnector = new Nett
+//        this.rpcConnector = new Nett
 
     }
 }
