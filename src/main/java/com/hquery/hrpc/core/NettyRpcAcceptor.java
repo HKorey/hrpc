@@ -1,8 +1,8 @@
 package com.hquery.hrpc.core;
 
 import com.hquery.hrpc.core.model.RpcRequest;
-import com.hquery.hrpc.core.protocol.RpcDecoder;
-import com.hquery.hrpc.core.protocol.RpcEncoder;
+import com.hquery.hrpc.core.codec.RpcDecoder;
+import com.hquery.hrpc.core.codec.RpcEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -56,8 +56,12 @@ public class NettyRpcAcceptor implements RpcAcceptor {
                                     new AcceptorHandler(NettyRpcAcceptor.this));
                         }
                     });
-
-
+            // Start the server.
+            b.bind(host, port).sync();
+//            ChannelFuture f =  b.bind(host,port).sync();
+            System.out.println("started and listen on");
+            // Wait until the server socket is closed.
+            //  f.channel().closeFuture().sync();
         } catch (Exception e) {
             log.error("error", e);
         }

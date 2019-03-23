@@ -1,7 +1,7 @@
 package com.hquery.hrpc.constants;
 
-import com.hquery.hrpc.core.protocol.Hessian2Serializer;
-import com.hquery.hrpc.core.protocol.Serializer;
+import com.hquery.hrpc.core.codec.Hessian2Serializer;
+import com.hquery.hrpc.core.codec.Serializer;
 import lombok.extern.slf4j.Slf4j;
 import sun.misc.Unsafe;
 

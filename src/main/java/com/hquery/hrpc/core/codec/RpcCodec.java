@@ -1,4 +1,4 @@
-package com.hquery.hrpc.core.protocol;
+package com.hquery.hrpc.core.codec;
 
 import com.hquery.hrpc.constants.GlobalConstants;
 

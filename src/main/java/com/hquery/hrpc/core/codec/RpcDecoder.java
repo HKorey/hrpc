@@ -1,4 +1,4 @@
-package com.hquery.hrpc.core.protocol;
+package com.hquery.hrpc.core.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
