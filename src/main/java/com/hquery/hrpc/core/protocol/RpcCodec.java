@@ -7,17 +7,15 @@ import java.io.IOException;
 /**
  * Created by HQuery on 2018/12/1.
  */
-public class RpcCode {
-
-    private static final RpcCode INSTANCE = new RpcCode();
+public class RpcCodec {
 
     private Serializer serialize;
 
-    private RpcCode() {
+    private RpcCodec() {
         serialize = GlobalConstants.SERIALIZER;
     }
 
-    public RpcCode(Serializer serialize) {
+    public RpcCodec(Serializer serialize) {
         this.serialize = serialize;
     }
 
@@ -29,8 +27,12 @@ public class RpcCode {
         return serialize.deserialize(bytes, clazz);
     }
 
-    public static RpcCode getInstance() {
-        return INSTANCE;
+    public static RpcCodec getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        public static final RpcCodec INSTANCE = new RpcCodec();
     }
 
 }

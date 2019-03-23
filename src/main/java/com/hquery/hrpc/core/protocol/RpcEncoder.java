@@ -15,10 +15,10 @@ import java.io.Serializable;
 @Slf4j
 public class RpcEncoder extends MessageToByteEncoder<Serializable> {
 
-    private RpcCode rpcCode;
+    private RpcCodec rpcCode;
 
     public RpcEncoder() {
-        rpcCode = RpcCode.getInstance();
+        rpcCode = RpcCodec.getInstance();
     }
 
     @Override

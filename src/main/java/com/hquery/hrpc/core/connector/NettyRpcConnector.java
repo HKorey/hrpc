@@ -7,10 +7,7 @@ import com.hquery.hrpc.core.model.RpcResponse;
 import com.hquery.hrpc.core.protocol.RpcDecoder;
 import com.hquery.hrpc.core.protocol.RpcEncoder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -57,16 +54,11 @@ public class NettyRpcConnector implements RpcConnector {
                                     new ConnectorHandler(futureUtil));
                         }
                     });
-//                    .handler(new ChannelInitializer<SocketChannel>() {
-//                        @Override
-//                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-//                            socketChannel.pipeline().addLast(
-//                                    new RpcEncoder(),
-//                                    new RpcDecoder(),
-//                                    new ConnectorHandler(futureUtil);
-//                )
-//                        }
-//                    });
+            // start the client
+            ChannelFuture f = b.connect(host, port).sync();
+            channel = f.channel();
+            // wait until the connection is close.
+//            f.channel().closeFuture().sync();
         } catch (Exception e) {
             log.error("error", e);
         }
