@@ -50,7 +50,7 @@ public class GlobalConstants {
 
     public static int ZK_SESSION_TIMEOUT = 5000;
 
-    public static String ZK_ADDRESS = "192.168.102.101:2181";
+    public static String ZK_ADDRESS = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183";
 
     public static String ZK_REGISTRY_PATH = "/rpc/data";
 

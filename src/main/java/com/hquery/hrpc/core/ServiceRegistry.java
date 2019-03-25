@@ -14,7 +14,6 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ServiceRegistry {
 
-
     private CountDownLatch latch = new CountDownLatch(1);
 
     public void registerClient(Class<?> clazz, String node) {
