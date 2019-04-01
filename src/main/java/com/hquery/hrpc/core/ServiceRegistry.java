@@ -3,6 +3,7 @@ package com.hquery.hrpc.core;
 import com.hquery.hrpc.constants.GlobalConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.*;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -12,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
  * 2019/3/23 18:37:09
  */
 @Slf4j
+@Component
 public class ServiceRegistry {
 
     private CountDownLatch latch = new CountDownLatch(1);

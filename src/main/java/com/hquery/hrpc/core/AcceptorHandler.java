@@ -15,12 +15,11 @@ import java.lang.reflect.Method;
 @Slf4j
 public class AcceptorHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
-    private NettyRpcAcceptor acceptor;
+    private RpcProcessor rpcProcessor;
 
-    public AcceptorHandler(NettyRpcAcceptor acceptor) {
-        this.acceptor = acceptor;
+    public AcceptorHandler(RpcProcessor rpcProcessor) {
+        this.rpcProcessor = rpcProcessor;
     }
-
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
@@ -49,15 +48,13 @@ public class AcceptorHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest msg) throws Exception {
-
         processRequest(ctx, msg);
-
     }
 
     private void processRequest(final ChannelHandlerContext ctx, final RpcRequest request) {
         //request 预处理，判断是否是心跳。
         // TODO
-        acceptor.getProcessor().submit(new Runnable() {
+        rpcProcessor.submit(new Runnable() {
             @Override
             public void run() {
                 hand(ctx, request);
@@ -66,7 +63,7 @@ public class AcceptorHandler extends SimpleChannelInboundHandler<RpcRequest> {
     }
 
     public void hand(final ChannelHandlerContext ctx, RpcRequest request) {
-        Object obj = acceptor.getProcessor().findService(request.getClassName());
+        Object obj = rpcProcessor.findService(request.getClassName());
         if (obj == null) {
             throw new IllegalArgumentException("has no these class");
         }

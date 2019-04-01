@@ -1,15 +1,14 @@
 package com.hquery.hrpc.init;
 
+import com.hquery.hrpc.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import javax.annotation.PostConstruct;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -24,23 +23,19 @@ import java.util.stream.Collectors;
 @Component
 @Order(Integer.MIN_VALUE)
 @Lazy(value = false)
-public class AppLifeCycle implements ApplicationContextAware, DisposableBean {
+@DependsOn("springContextUtil")
+public class AppLifeCycle implements DisposableBean {
 
     private List<AbstractServerLifeCycle> lifeCycles;
 
-    private ApplicationContext applicationContext;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-        init();
+    @PostConstruct
+    public void init() {
+        initAppLifeCycle();
         start();
     }
 
-    private void init() {
-        ApplicationContext applicationContext = this.applicationContext;
-        AbstractServerLifeCycle.setApplicationContext(this.applicationContext);
-        Map<String, AbstractServerLifeCycle> beansOfType = applicationContext.getBeansOfType(AbstractServerLifeCycle.class);
+    private void initAppLifeCycle() {
+        Map<String, AbstractServerLifeCycle> beansOfType = SpringContextUtil.getBeansOfType(AbstractServerLifeCycle.class);
         if (beansOfType == null || beansOfType.isEmpty()) {
             return;
         }

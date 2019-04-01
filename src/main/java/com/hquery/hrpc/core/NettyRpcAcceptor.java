@@ -1,8 +1,9 @@
 package com.hquery.hrpc.core;
 
-import com.hquery.hrpc.core.model.RpcRequest;
+import com.hquery.hrpc.constants.GlobalConstants;
 import com.hquery.hrpc.core.codec.RpcDecoder;
 import com.hquery.hrpc.core.codec.RpcEncoder;
+import com.hquery.hrpc.core.model.RpcRequest;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -12,108 +13,67 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author hquery.huang
  * 2019/3/23 15:56:42
  */
 @Slf4j
+@Component
 public class NettyRpcAcceptor implements RpcAcceptor {
 
-    private String host;
-
+    @Value("${hrpc.port}")
     private int port;
 
-    private RpcProcessor processor;
+    @Resource
+    private RpcProcessor rpcProcessor;
 
+    @Getter
     private EventLoopGroup bossGroup;
 
+    @Getter
     private EventLoopGroup workerGroup;
 
-    public String getHost() {
-        return host;
-    }
+    @Setter
+    private CountDownLatch countDownLatch;
 
-    public void init() throws IOException {
+    public void init() throws IOException, InterruptedException {
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
 
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 100)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(
-                                    new RpcEncoder(),
-                                    new RpcDecoder(RpcRequest.class),
-                                    new AcceptorHandler(NettyRpcAcceptor.this));
-                        }
-                    });
-            // Start the server.
-            b.bind(host, port).sync();
+        ServerBootstrap b = new ServerBootstrap();
+        b.group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .option(ChannelOption.SO_BACKLOG, 100)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast(
+                                new RpcEncoder(),
+                                new RpcDecoder(RpcRequest.class),
+                                new AcceptorHandler(rpcProcessor));
+                    }
+                });
+        String host = GlobalConstants.DEFAULT_LOCAL_HOST;
+        // Start the server.
+        b.bind(host, port).sync();
 //            ChannelFuture f =  b.bind(host,port).sync();
-            System.out.println("started and listen on");
-            // Wait until the server socket is closed.
-            //  f.channel().closeFuture().sync();
-        } catch (Exception e) {
-            log.error("error", e);
+        // Wait until the server socket is closed.
+        //  f.channel().closeFuture().sync();
+        if (this.countDownLatch != null) {
+            this.countDownLatch.countDown();
         }
+        log.info("started and listen on【{}:{}】", host, port);
     }
 
-    @Override
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    @Override
-    public void start() throws IOException {
-        this.init();
-    }
-
-    @Override
-    public void stop() throws IOException {
-        bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    @Override
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public RpcProcessor getProcessor() {
-        return processor;
-    }
-
-    @Override
-    public void setProcessor(RpcProcessor processor) {
-        this.processor = processor;
-    }
-
-    public EventLoopGroup getBossGroup() {
-        return bossGroup;
-    }
-
-    public void setBossGroup(EventLoopGroup bossGroup) {
-        this.bossGroup = bossGroup;
-    }
-
-    public EventLoopGroup getWorkerGroup() {
-        return workerGroup;
-    }
-
-    public void setWorkerGroup(EventLoopGroup workerGroup) {
-        this.workerGroup = workerGroup;
-    }
 }

@@ -7,27 +7,32 @@ package com.hquery.hrpc.init;
 public interface ServerLifeCycle {
 
     /**
-     * @author hquery
-     * 2019/3/30 20:09
-     * @description start
+     * start
+     *
+     * @param
      * @return void
+     * @author hquery
+     * 2019/4/1 19:17:25
      */
     void start();
 
     /**
-     * @author hquery
-     * 2019/3/30 20:09
-     * @description stop
+     * stop
+     *
+     * @param
      * @return void
+     * @author hquery
+     * 2019/4/1 19:17:44
      */
     void stop();
 
     /**
-     * @author hquery
-     * 2019/3/30 20:09
-     * @description isStarted
+     * started success or no
+     *
      * @param
      * @return boolean
+     * @author hquery
+     * 2019/4/1 19:18:12
      */
     boolean isStarted();
 }

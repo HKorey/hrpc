@@ -1,11 +1,14 @@
 package com.hquery.hrpc.export;
 
 import com.hquery.hrpc.annotation.RegisterRpcServer;
+import com.hquery.hrpc.core.server.RpcServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * 暴露Rpc服务
@@ -17,6 +20,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExportServerScanner implements BeanPostProcessor {
 
+    @Resource
+    private RpcServer rpcServer;
+
     @Nullable
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -25,13 +31,12 @@ public class ExportServerScanner implements BeanPostProcessor {
         if (annotation == null) {
             return bean;
         }
-        Class<?> inter = annotation.exportInterface();
-        if (!inter.isAssignableFrom(beanClass)) {
-            log.error("RPC注册失败-注册实例【{}】未实现接口【{}】", beanName, inter.getName());
+        if (!annotation.exportInterface().isAssignableFrom(beanClass)) {
+            log.error("RPC注册失败-注册实例【{}】未实现接口【{}】", beanName, annotation.exportInterface().getName());
             return bean;
         }
         log.info("Export RPC server, beanName:{}", beanName);
-
+        rpcServer.export(annotation.exportInterface(), bean);
 
 
         return bean;

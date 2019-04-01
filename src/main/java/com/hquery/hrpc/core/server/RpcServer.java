@@ -1,18 +1,17 @@
 package com.hquery.hrpc.core.server;
 
-import com.hquery.hrpc.core.*;
+import com.hquery.hrpc.constants.GlobalConstants;
+import com.hquery.hrpc.core.Exporter;
+import com.hquery.hrpc.core.NettyRpcAcceptor;
+import com.hquery.hrpc.core.ServiceRegistry;
 import com.hquery.hrpc.init.AbstractServerLifeCycle;
-import com.hquery.hrpc.init.ServerLifeCycle;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 /**
  * Created by HQuery on 2018/12/1.
@@ -21,51 +20,27 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class RpcServer extends AbstractServerLifeCycle {
 
-    protected ConcurrentHashMap<String, Object> serviceEngine = new ConcurrentHashMap<>();
+    public static final int DEFAULT_WEIGHT = 100;
 
-    private RpcProcessor processor;
+    public static final CountDownLatch NETTY_SERVER_START_BLOCKING = new CountDownLatch(1);
 
-    private RpcAcceptor acceptor;
+    public static final int NETTY_CONNECTION_TIME_OUT_MINUTES = 1;
 
+    @Resource
     private Exporter exporter;
 
-    private String host;
+    @Resource
+    private ServiceRegistry serviceRegistry;
 
-    @Value("${server.port}")
+    @Resource
+    private NettyRpcAcceptor nettyRpcAcceptor;
+
+    @Value("${hrpc.port}")
     private int port;
 
     private int weight;
 
-    private boolean registry = false;
-
-    private boolean started;
-
     public RpcServer() {
-    }
-
-    public RpcServer(String host, int port) {
-        this(host, port, 100);
-    }
-
-    public RpcServer(String host, int port, int weight) {
-        this.host = host;
-        this.port = port;
-        this.weight = weight;
-        exporter = Exporter.getInstance();
-        acceptor = new NettyRpcAcceptor();
-        acceptor.setHost(host);
-        acceptor.setPort(port);
-        processor = new RpcProcessor(exporter);
-        acceptor.setProcessor(processor);
-        try {
-            acceptor.start();
-        } catch (IOException e) {
-            log.error("error", e);
-        }
-    }
-
-    public void setRegistry(boolean registry) {
-        this.registry = registry;
     }
 
     public void export(Class<?> clazz, Object obj) {
@@ -73,30 +48,39 @@ public class RpcServer extends AbstractServerLifeCycle {
     }
 
     public void export(Class<?> clazz, Object obj, String version) {
-        exporter.export(clazz, obj, version);
-        if (registry) {
-            ServiceRegistry.getInstance().registerServer(clazz, host + ":" + port, "" + weight);
+        try {
+            NETTY_SERVER_START_BLOCKING.await(NETTY_CONNECTION_TIME_OUT_MINUTES, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("netty connect time out", e);
         }
+        exporter.export(clazz, obj, version);
+        serviceRegistry.registerServer(clazz, GlobalConstants.DEFAULT_LOCAL_HOST + ":" + port, "" + weight);
     }
 
 
     @Override
     public void start() {
+        log.info("获取本地服务IP【{}:{}】", GlobalConstants.DEFAULT_LOCAL_HOST, port);
+        this.weight = DEFAULT_WEIGHT;
         try {
-            String hostAddress = InetAddress.getLocalHost().getHostAddress();
-            log.info("获取本地服务IP【{}:{}】", hostAddress, port);
-        } catch (UnknownHostException e) {
-            log.error("获取本地服务IP失败", e);
+            nettyRpcAcceptor.setCountDownLatch(NETTY_SERVER_START_BLOCKING);
+            nettyRpcAcceptor.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     @Override
-    public boolean isStarted() {
-        return started;
+    public void stop() {
+        nettyRpcAcceptor.getBossGroup().shutdownGracefully();
+        nettyRpcAcceptor.getWorkerGroup().shutdownGracefully();
     }
 
     @Override
     public int order() {
         return 0;
     }
+
 }

@@ -1,6 +1,5 @@
 package com.hquery.hrpc.core;
 
-import java.io.IOException;
 
 /**
  * @author hquery.huang
@@ -8,13 +7,4 @@ import java.io.IOException;
  */
 public interface RpcAcceptor {
 
-    void setHost(String host);
-
-    void setPort(int port);
-
-    void start() throws IOException;
-
-    void stop() throws IOException;
-
-    void setProcessor(RpcProcessor processor);
 }

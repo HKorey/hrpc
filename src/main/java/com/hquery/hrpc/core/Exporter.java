@@ -1,6 +1,7 @@
 package com.hquery.hrpc.core;
 
 import com.hquery.hrpc.constants.GlobalConstants;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,12 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author hquery.huang
  * 2019/3/23 15:50:34
  */
+@Component
 public class Exporter {
 
     protected ConcurrentHashMap<String, Object> serviceEngine = new ConcurrentHashMap<>();
-
-    private Exporter() {
-    }
 
     public void export(Class<?> clazz, Object obj, String version) {
         try {

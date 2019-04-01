@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author hquery.huang
@@ -58,4 +60,14 @@ public class GlobalConstants {
 
     public static String ZK_CLIENT_PATH = "/consumers";
 
+    public static String DEFAULT_LOCAL_HOST = "127.0.0.1";
+
+    private static String getHostAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            log.error("获取本地host出现异常", e);
+        }
+        return "127.0.0.1";
+    }
 }
