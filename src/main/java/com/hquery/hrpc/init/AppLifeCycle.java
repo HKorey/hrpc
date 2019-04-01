@@ -9,8 +9,11 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author hquery
@@ -21,25 +24,27 @@ import java.util.Map;
 @Component
 @Order(Integer.MIN_VALUE)
 @Lazy(value = false)
-public class InitLifeCycle implements ApplicationContextAware, DisposableBean {
+public class AppLifeCycle implements ApplicationContextAware, DisposableBean {
+
+    private List<AbstractServerLifeCycle> lifeCycles;
 
     private ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        init();
         start();
     }
 
-
-    public void start() {
+    private void init() {
         ApplicationContext applicationContext = this.applicationContext;
+        AbstractServerLifeCycle.setApplicationContext(this.applicationContext);
         Map<String, AbstractServerLifeCycle> beansOfType = applicationContext.getBeansOfType(AbstractServerLifeCycle.class);
         if (beansOfType == null || beansOfType.isEmpty()) {
             return;
         }
-        AbstractServerLifeCycle.setApplicationContext(this.applicationContext);
-        beansOfType.entrySet()
+        lifeCycles = beansOfType.entrySet()
                 .stream()
                 .sorted(new Comparator<Map.Entry<String, AbstractServerLifeCycle>>() {
                     @Override
@@ -47,36 +52,28 @@ public class InitLifeCycle implements ApplicationContextAware, DisposableBean {
                         return Integer.compare(o1.getValue().order(), o2.getValue().order());
                     }
                 })
-                .forEach(serverLifeCycleEntry -> {
-                    String key = serverLifeCycleEntry.getKey();
-                    ServerLifeCycle value = serverLifeCycleEntry.getValue();
-                    try {
-                        value.start();
-                    } catch (Throwable t) {
-                        log.error("初始化类BeanName【{}】出现异常", key, t);
-                    }
-                });
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    }
+
+    public void start() {
+        lifeCycles.forEach(serverLifeCycle -> {
+            try {
+                serverLifeCycle.start();
+            } catch (Throwable t) {
+                log.error("初始化类BeanName【{}】出现异常", serverLifeCycle.getClass().getName(), t);
+            }
+        });
     }
 
     @Override
     public void destroy() throws Exception {
-        Map<String, AbstractServerLifeCycle> beansOfType = applicationContext.getBeansOfType(AbstractServerLifeCycle.class);
-        beansOfType.entrySet()
-                .stream()
-                .sorted(new Comparator<Map.Entry<String, AbstractServerLifeCycle>>() {
-                    @Override
-                    public int compare(Map.Entry<String, AbstractServerLifeCycle> o1, Map.Entry<String, AbstractServerLifeCycle> o2) {
-                        return Integer.compare(o1.getValue().order(), o2.getValue().order());
-                    }
-                })
-                .forEach(serverLifeCycleEntry -> {
-                    String key = serverLifeCycleEntry.getKey();
-                    ServerLifeCycle value = serverLifeCycleEntry.getValue();
-                    try {
-                        System.out.println(key);
-                    } catch (Throwable t) {
-                        log.error("初始化类BeanName【{}】出现异常", key, t);
-                    }
-                });
+        lifeCycles.forEach(serverLifeCycle -> {
+            try {
+                serverLifeCycle.stop();
+            } catch (Throwable t) {
+                log.error("执行BeanName【{}】stop()方法出现异常", serverLifeCycle.getClass().getName(), t);
+            }
+        });
     }
 }

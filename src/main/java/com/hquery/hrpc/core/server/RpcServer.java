@@ -1,16 +1,25 @@
 package com.hquery.hrpc.core.server;
 
 import com.hquery.hrpc.core.*;
+import com.hquery.hrpc.init.AbstractServerLifeCycle;
+import com.hquery.hrpc.init.ServerLifeCycle;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by HQuery on 2018/12/1.
  */
 @Slf4j
-public class RpcServer {
+@Component
+public class RpcServer extends AbstractServerLifeCycle {
 
     protected ConcurrentHashMap<String, Object> serviceEngine = new ConcurrentHashMap<>();
 
@@ -22,11 +31,17 @@ public class RpcServer {
 
     private String host;
 
+    @Value("${server.port}")
     private int port;
 
     private int weight;
 
     private boolean registry = false;
+
+    private boolean started;
+
+    public RpcServer() {
+    }
 
     public RpcServer(String host, int port) {
         this(host, port, 100);
@@ -62,5 +77,26 @@ public class RpcServer {
         if (registry) {
             ServiceRegistry.getInstance().registerServer(clazz, host + ":" + port, "" + weight);
         }
+    }
+
+
+    @Override
+    public void start() {
+        try {
+            String hostAddress = InetAddress.getLocalHost().getHostAddress();
+            log.info("获取本地服务IP【{}:{}】", hostAddress, port);
+        } catch (UnknownHostException e) {
+            log.error("获取本地服务IP失败", e);
+        }
+    }
+
+    @Override
+    public boolean isStarted() {
+        return started;
+    }
+
+    @Override
+    public int order() {
+        return 0;
     }
 }

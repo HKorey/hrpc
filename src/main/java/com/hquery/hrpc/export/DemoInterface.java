@@ -5,4 +5,6 @@ package com.hquery.hrpc.export;
  * 2019/3/30 17:41
  */
 public interface DemoInterface {
+
+
 }

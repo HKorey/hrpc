@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
  * @author hquery.huang
  * 2019/3/25 17:36:47
  */
-@Target({ElementType.FIELD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RegisterRpcServer {
 
-    String name();
+    Class<?> exportInterface();
 }
