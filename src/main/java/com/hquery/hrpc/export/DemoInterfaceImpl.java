@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
  * 2019/3/30 17:41
  */
 @Service
-//@RegisterRpcServer(exportInterface = DemoInterface.class)
+@RegisterRpcServer(exportInterface = DemoInterface.class)
 public class DemoInterfaceImpl implements DemoInterface {
 
 
+    @Override
+    public String hello(String hello) {
+        return "service :" + hello;
+    }
 }

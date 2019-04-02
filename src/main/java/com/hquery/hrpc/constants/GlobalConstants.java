@@ -31,38 +31,40 @@ public class GlobalConstants {
         }
     }
 
-    public static String DEFAULT_VERSION = "1.0";
+    public static final String DEFAULT_VERSION = "1.0";
 
-    public static int RPC_TIMEOUT = 30000;
+    public static final int RPC_TIMEOUT = 30000;
 
-    public static int NODE_ID = 1;
+    public static final int NODE_ID = 1;
 
     /**
      * 获取可用CPU个数
      */
-    public static int EXECUTOR_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 2;
+    public static final int EXECUTOR_THREAD_COUNT = Runtime.getRuntime().availableProcessors() * 2;
 
     //	public static Serializer SERIALIZER = new JdkSerializer() ;
 
 //	public static Serializer SERIALIZER = KryoSerializer.getInstance() ;
 
-    public static Serializer SERIALIZER = new Hessian2Serializer();
+    public static final Serializer SERIALIZER = new Hessian2Serializer();
 
 //	public static Serializer SERIALIZER = new ProtostuffSerializer() ;
 
-    public static int ZK_SESSION_TIMEOUT = 5000;
+    public static final int ZK_SESSION_TIMEOUT = 5000;
 
-    public static String ZK_ADDRESS = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183";
+    public static final String ZK_ADDRESS = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183";
 
-    public static String ZK_REGISTRY_PATH = "/rpc/data";
+    public static final String ZK_REGISTRY_PATH = "/rpc/data";
 
-    public static String ZK_SERVER_PATH = "/providers";
+    public static final String ZK_SERVER_PATH = "/providers";
 
-    public static String ZK_CLIENT_PATH = "/consumers";
+    public static final String ZK_CLIENT_PATH = "/consumers";
 
-    public static String DEFAULT_LOCAL_HOST = "127.0.0.1";
+    public static final String DEFAULT_LOCAL_HOST = "127.0.0.1";
 
-    private static String getHostAddress() {
+    public static final int DEFAULT_HRPC_PORT = 52710;
+
+    private static final String getHostAddress() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {

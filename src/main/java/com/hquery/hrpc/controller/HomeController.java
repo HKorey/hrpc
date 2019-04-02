@@ -1,5 +1,8 @@
 package com.hquery.hrpc.controller;
 
+import com.trustlife.tis.mutual.claim.facade.FgwFileUploadFacade;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,20 +15,16 @@ import java.util.Map;
  * 2018/5/3 16:55
  */
 @RestController
-@RequestMapping("/home")
+@RequestMapping("/hrpc")
 public class HomeController {
 
-    @RequestMapping("/test")
-    public Map<String, String> home(@RequestBody Map<String, Object> body) {
-        Map<String, String> result = new HashMap<>();
-//        try {
-//            Field declaredField = ((Class) body.get("Class")).getDeclaredField("globalMap");
-//            System.out.println(declaredField);
-//        } catch (NoSuchFieldException e) {
-//            e.printStackTrace();
-//        }
-//        String url = "http://172.16.1.33:8080/home/test/";
-//        RestClient.post(url, body, HttpContentTypeConstant.JSON.getName());
+    @Autowired
+    private FgwFileUploadFacade fgwFileUploadFacade;
+
+    @GetMapping("/test")
+    public Map<String, Object> home() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("fgwFileUploadFacade", fgwFileUploadFacade);
         return result;
     }
 

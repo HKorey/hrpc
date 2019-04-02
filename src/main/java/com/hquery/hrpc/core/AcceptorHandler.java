@@ -23,14 +23,14 @@ public class AcceptorHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channelUnregistered");
+        log.info("channelUnregistered");
         ctx.fireChannelUnregistered();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // Send the first message if this handler is a client-side handler.
-        System.out.println("channelActive");
+        log.info("channelActive");
     }
 
 

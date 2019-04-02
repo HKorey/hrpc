@@ -14,7 +14,10 @@ import java.io.IOException;
 import java.util.concurrent.*;
 
 /**
- * Created by HQuery on 2018/12/1.
+ * RPC Server
+ *
+ * @author hquery
+ * 2019/4/2 10:26:02
  */
 @Slf4j
 @Component
@@ -35,40 +38,34 @@ public class RpcServer extends AbstractServerLifeCycle {
     @Resource
     private NettyRpcAcceptor nettyRpcAcceptor;
 
-    @Value("${hrpc.port}")
-    private int port;
-
     private int weight;
-
-    public RpcServer() {
-    }
 
     public void export(Class<?> clazz, Object obj) {
         export(clazz, obj, null);
     }
 
     public void export(Class<?> clazz, Object obj, String version) {
-        try {
-            NETTY_SERVER_START_BLOCKING.await(NETTY_CONNECTION_TIME_OUT_MINUTES, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("netty connect time out", e);
-        }
         exporter.export(clazz, obj, version);
-        serviceRegistry.registerServer(clazz, GlobalConstants.DEFAULT_LOCAL_HOST + ":" + port, "" + weight);
+//        try {
+//            NETTY_SERVER_START_BLOCKING.await(NETTY_CONNECTION_TIME_OUT_MINUTES, TimeUnit.MINUTES);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException("netty connect time out", e);
+//        }
+//        serviceRegistry.registerServer(clazz, GlobalConstants.DEFAULT_LOCAL_HOST + ":" + port, "" + weight);
     }
 
 
     @Override
     public void start() {
-        log.info("获取本地服务IP【{}:{}】", GlobalConstants.DEFAULT_LOCAL_HOST, port);
+        log.info("获取本地服务IP【{}:{}】", GlobalConstants.DEFAULT_LOCAL_HOST, GlobalConstants.DEFAULT_HRPC_PORT);
         this.weight = DEFAULT_WEIGHT;
         try {
             nettyRpcAcceptor.setCountDownLatch(NETTY_SERVER_START_BLOCKING);
             nettyRpcAcceptor.init();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("初始化Netty出现异常", e);
+        } catch (IOException e) {
+            log.error("初始化Netty出现异常", e);
         }
     }
 

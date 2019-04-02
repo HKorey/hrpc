@@ -31,9 +31,6 @@ import java.util.concurrent.CountDownLatch;
 @Component
 public class NettyRpcAcceptor implements RpcAcceptor {
 
-    @Value("${hrpc.port}")
-    private int port;
-
     @Resource
     private RpcProcessor rpcProcessor;
 
@@ -66,14 +63,14 @@ public class NettyRpcAcceptor implements RpcAcceptor {
                 });
         String host = GlobalConstants.DEFAULT_LOCAL_HOST;
         // Start the server.
-        b.bind(host, port).sync();
+        b.bind(host, GlobalConstants.DEFAULT_HRPC_PORT).sync();
 //            ChannelFuture f =  b.bind(host,port).sync();
         // Wait until the server socket is closed.
         //  f.channel().closeFuture().sync();
         if (this.countDownLatch != null) {
             this.countDownLatch.countDown();
         }
-        log.info("started and listen on【{}:{}】", host, port);
+        log.info("started and listen on【{}:{}】", host, GlobalConstants.DEFAULT_HRPC_PORT);
     }
 
 }

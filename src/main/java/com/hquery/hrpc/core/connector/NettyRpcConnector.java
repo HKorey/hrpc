@@ -2,29 +2,27 @@ package com.hquery.hrpc.core.connector;
 
 import com.hquery.hrpc.core.RpcContext;
 import com.hquery.hrpc.core.RpcFuture;
-import com.hquery.hrpc.core.model.RpcRequest;
-import com.hquery.hrpc.core.model.RpcResponse;
 import com.hquery.hrpc.core.codec.RpcDecoder;
 import com.hquery.hrpc.core.codec.RpcEncoder;
+import com.hquery.hrpc.core.model.RpcRequest;
+import com.hquery.hrpc.core.model.RpcResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 
 /**
- *
  * SOFA RPC - RpcConnectionFactory
- *
+ * <p>
  * Created by HQuery on 2018/12/1.
  */
 @Slf4j
-@Data
 public class NettyRpcConnector implements RpcConnector {
 
     private String host;
@@ -37,31 +35,32 @@ public class NettyRpcConnector implements RpcConnector {
 
     private RpcFutureUtil futureUtil = new RpcFutureUtil();
 
-    public void init() {
+    public NettyRpcConnector(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    public void init() throws InterruptedException {
         // Configure the client
         eventLoopGroup = new NioEventLoopGroup();
-        try {
-            Bootstrap b = new Bootstrap();
-            b.group(eventLoopGroup)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel channel) throws Exception {
-                            channel.pipeline().addLast(
-                                    new RpcEncoder(),
-                                    new RpcDecoder(RpcResponse.class),
-                                    new ConnectorHandler(futureUtil));
-                        }
-                    });
-            // start the client
-            ChannelFuture f = b.connect(host, port).sync();
-            channel = f.channel();
-            // wait until the connection is close.
+        Bootstrap b = new Bootstrap();
+        b.group(eventLoopGroup)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel channel) throws Exception {
+                        channel.pipeline().addLast(
+                                new RpcEncoder(),
+                                new RpcDecoder(RpcResponse.class),
+                                new ConnectorHandler(futureUtil));
+                    }
+                });
+        // start the client
+        ChannelFuture f = b.connect(host, port).sync();
+        channel = f.channel();
+        // wait until the connection is close.
 //            f.channel().closeFuture().sync();
-        } catch (Exception e) {
-            log.error("error", e);
-        }
     }
 
     @Override
@@ -74,13 +73,27 @@ public class NettyRpcConnector implements RpcConnector {
     }
 
     @Override
-    public void start() {
+    public RpcConnector setHost(String host) {
+        this.host = host;
+        return this;
+    }
+
+    @Override
+    public RpcConnector setPort(int port) {
+        this.port = port;
+        return this;
+    }
+
+    @Override
+    public void start() throws Exception {
         init();
     }
 
     @Override
-    public void stop() {
-        eventLoopGroup.shutdownGracefully();
+    public void stop() throws Exception {
+        if (eventLoopGroup != null) {
+            eventLoopGroup.shutdownGracefully();
+        }
     }
 
     public RpcResponse send(RpcRequest request, RpcContext rpcContext) {
