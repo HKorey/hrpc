@@ -1,6 +1,7 @@
 package com.hquery.hrpc.core.adapter;
 
 import com.hquery.hrpc.core.proxy.RpcProxy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.lang.Nullable;
 
@@ -10,9 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author hquery.huang
  * 2019/4/2 16:09:18
  */
+@Slf4j
 public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
 
-    private Class serviceInterface;
+    private Class<T> serviceInterface;
 
     private RpcProxy proxy;
 
@@ -26,7 +28,7 @@ public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
      */
     private static final ConcurrentHashMap<Class, Object> OBJECT_CONTAINER = new ConcurrentHashMap<>();
 
-    public RpcServiceFactoryBean(RpcProxy proxy, Class serviceInterface) {
+    public RpcServiceFactoryBean(RpcProxy proxy, Class<T> serviceInterface) {
         this.proxy = proxy;
         this.serviceInterface = serviceInterface;
     }

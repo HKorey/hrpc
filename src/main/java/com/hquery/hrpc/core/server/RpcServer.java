@@ -25,8 +25,6 @@ public class RpcServer extends AbstractServerLifeCycle {
 
     public static final int DEFAULT_WEIGHT = 100;
 
-    public static final CountDownLatch NETTY_SERVER_START_BLOCKING = new CountDownLatch(1);
-
     public static final int NETTY_CONNECTION_TIME_OUT_MINUTES = 1;
 
     @Resource
@@ -46,12 +44,8 @@ public class RpcServer extends AbstractServerLifeCycle {
 
     public void export(Class<?> clazz, Object obj, String version) {
         exporter.export(clazz, obj, version);
-//        try {
-//            NETTY_SERVER_START_BLOCKING.await(NETTY_CONNECTION_TIME_OUT_MINUTES, TimeUnit.MINUTES);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException("netty connect time out", e);
-//        }
-//        serviceRegistry.registerServer(clazz, GlobalConstants.DEFAULT_LOCAL_HOST + ":" + port, "" + weight);
+        // TODO 注册至注册中心
+//        serviceRegistry.registerServer(clazz, GlobalConstants.DEFAULT_LOCAL_HOST + ":" + GlobalConstants.DEFAULT_HRPC_PORT, String.valueOf(weight));
     }
 
 
@@ -60,7 +54,6 @@ public class RpcServer extends AbstractServerLifeCycle {
         log.info("获取本地服务IP【{}:{}】", GlobalConstants.DEFAULT_LOCAL_HOST, GlobalConstants.DEFAULT_HRPC_PORT);
         this.weight = DEFAULT_WEIGHT;
         try {
-            nettyRpcAcceptor.setCountDownLatch(NETTY_SERVER_START_BLOCKING);
             nettyRpcAcceptor.init();
         } catch (InterruptedException e) {
             log.error("初始化Netty出现异常", e);

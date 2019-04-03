@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
  * @author hquery.huang
  * 2019/3/30 17:41
  */
-@Service
-@RegisterRpcServer(exportInterface = DemoInterface.class)
-public class DemoInterfaceImpl implements DemoInterface {
+//@Service
+//@RegisterRpcServer(exportInterface = DemoInterface.class)
+public class DemoInterfaceImpl {
 
 
-    @Override
-    public String hello(String hello) {
-        return "service :" + hello;
-    }
+//    @Override
+//    public String hello(String hello) {
+//        return "service :" + hello;
+//    }
 }

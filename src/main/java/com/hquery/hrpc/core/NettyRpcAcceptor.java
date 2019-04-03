@@ -40,9 +40,6 @@ public class NettyRpcAcceptor implements RpcAcceptor {
     @Getter
     private EventLoopGroup workerGroup;
 
-    @Setter
-    private CountDownLatch countDownLatch;
-
     public void init() throws IOException, InterruptedException {
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
@@ -67,9 +64,6 @@ public class NettyRpcAcceptor implements RpcAcceptor {
 //            ChannelFuture f =  b.bind(host,port).sync();
         // Wait until the server socket is closed.
         //  f.channel().closeFuture().sync();
-        if (this.countDownLatch != null) {
-            this.countDownLatch.countDown();
-        }
         log.info("started and listen on【{}:{}】", host, GlobalConstants.DEFAULT_HRPC_PORT);
     }
 

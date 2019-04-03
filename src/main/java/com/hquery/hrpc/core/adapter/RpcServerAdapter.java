@@ -1,5 +1,6 @@
 package com.hquery.hrpc.core.adapter;
 
+import com.hquery.hrpc.constants.GlobalConstants;
 import com.hquery.hrpc.core.client.RpcClient;
 import com.hquery.hrpc.core.connector.NettyRpcConnector;
 import com.hquery.hrpc.core.connector.RpcConnector;
@@ -48,27 +49,24 @@ public class RpcServerAdapter implements BeanDefinitionRegistryPostProcessor {
         if (!initRpcServerConf()) {
             return;
         }
-        interfaces.entrySet().forEach(entry -> {
+        for (Map.Entry<String, String> entry : interfaces.entrySet()) {
             // TODO 查看ZK是否暴露了此服务，并获取服务地址+端口
             log.info("Server name:{}, class:{}", entry.getKey(), entry.getValue());
-            String address = "127.0.0.1";
+            String address = "172.16.1.33";
             int port = 52710;
             try {
                 RpcConnector connector = new NettyRpcConnector(address, port);
                 RpcProxy proxy = new RpcProxy(connector);
-                RpcClient rpcClient = RpcClient.builder()
-                        .proxy(proxy)
-                        .rpcConnector(connector).build();
-//                connector.start();
                 Class<?> serviceClazz = Class.forName(entry.getValue());
-                beanFactory.registerSingleton(entry.getKey(), new RpcServiceFactoryBean<>(proxy, serviceClazz));
+                connector.start();
+                beanFactory.registerSingleton(entry.getKey(), new RpcServiceFactoryBean(proxy, serviceClazz));
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Can not resolved class " + entry.getValue(), e);
             } catch (Exception e) {
 //                throw new RuntimeException("Connect server[" + address + ":" + port + "] error", e);
                 log.error("Connect server[{}:{}] error", address, port);
             }
-        });
+        }
     }
 
     /**
