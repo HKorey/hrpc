@@ -1,4 +1,4 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.invoker;
 
 /**
  * @author hquery.huang

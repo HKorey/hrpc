@@ -1,6 +1,7 @@
 package com.hquery.hrpc.core.adapter;
 
 import com.hquery.hrpc.core.proxy.RpcProxy;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.lang.Nullable;
@@ -16,6 +17,7 @@ public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
 
     private Class<T> serviceInterface;
 
+    @Getter
     private RpcProxy proxy;
 
     /**

@@ -1,6 +1,7 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.server;
 
 import com.hquery.hrpc.constants.GlobalConstants;
+import com.hquery.hrpc.core.exception.RpcException;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;

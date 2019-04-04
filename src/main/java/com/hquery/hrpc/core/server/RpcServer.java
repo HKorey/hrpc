@@ -1,17 +1,17 @@
 package com.hquery.hrpc.core.server;
 
 import com.hquery.hrpc.constants.GlobalConstants;
-import com.hquery.hrpc.core.Exporter;
-import com.hquery.hrpc.core.NettyRpcAcceptor;
-import com.hquery.hrpc.core.ServiceRegistry;
+import com.hquery.hrpc.core.acceptor.NettyRpcAcceptor;
+import com.hquery.hrpc.core.exception.RpcException;
+import com.hquery.hrpc.core.registry.DefaultRegistry;
 import com.hquery.hrpc.init.AbstractServerLifeCycle;
+import com.hquery.hrpc.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.concurrent.*;
 
 /**
  * RPC Server
@@ -31,10 +31,10 @@ public class RpcServer extends AbstractServerLifeCycle {
     private Exporter exporter;
 
     @Resource
-    private ServiceRegistry serviceRegistry;
-
-    @Resource
     private NettyRpcAcceptor nettyRpcAcceptor;
+
+    @Value("${hrpc.server.registry.protocol.client:zookeeper}")
+    private String registryProtocol;
 
     private int weight;
 
@@ -44,8 +44,12 @@ public class RpcServer extends AbstractServerLifeCycle {
 
     public void export(Class<?> clazz, Object obj, String version) {
         exporter.export(clazz, obj, version);
-        // TODO 注册至注册中心
-//        serviceRegistry.registerServer(clazz, GlobalConstants.DEFAULT_LOCAL_HOST + ":" + GlobalConstants.DEFAULT_HRPC_PORT, String.valueOf(weight));
+        // 注册至注册中心
+        DefaultRegistry registry = SpringContextUtil.getBean(registryProtocol + GlobalConstants.REGISTRY_PROTOCOL_SUFFIX);
+        if (registry == null) {
+            throw new RpcException("未找到注册协议，请配置hrpc.server.registry.protocol.client");
+        }
+        registry.registerServer(clazz, GlobalConstants.DEFAULT_LOCAL_HOST + ":" + GlobalConstants.DEFAULT_HRPC_PORT, String.valueOf(weight));
     }
 
 

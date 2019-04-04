@@ -1,6 +1,13 @@
 package com.hquery.hrpc.zookeeper;
 
+/**
+ * ZK异常
+ *
+ * @author hquery
+ * 2019/4/3 20:13:43
+ */
 public class ZkException extends RuntimeException {
+
     public ZkException() {
         super();
     }

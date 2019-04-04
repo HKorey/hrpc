@@ -1,6 +1,7 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.acceptor;
 
 import com.hquery.hrpc.constants.GlobalConstants;
+import com.hquery.hrpc.core.processor.RpcProcessor;
 import com.hquery.hrpc.core.codec.RpcDecoder;
 import com.hquery.hrpc.core.codec.RpcEncoder;
 import com.hquery.hrpc.core.model.RpcRequest;
@@ -14,14 +15,11 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author hquery.huang

@@ -1,5 +1,6 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.connector;
 
+import com.hquery.hrpc.core.invoker.InvokeCallback;
 import com.hquery.hrpc.core.model.RpcResponse;
 
 import java.util.concurrent.*;

@@ -1,4 +1,4 @@
-package com.hquery.hrpc.export;
+package com.hquery.hrpc.core.server;
 
 import com.hquery.hrpc.annotation.RegisterRpcServer;
 import com.hquery.hrpc.core.server.RpcServer;
@@ -36,9 +36,11 @@ public class ExportServerScanner implements BeanPostProcessor {
             return bean;
         }
         log.info("Export RPC server, beanName:{}", beanName);
-        rpcServer.export(annotation.exportInterface(), bean);
-
-
+        try {
+            rpcServer.export(annotation.exportInterface(), bean);
+        } catch (Throwable t) {
+            log.error("Export RPC server error, beanName:{}", beanName, t);
+        }
         return bean;
     }
 
