@@ -60,11 +60,11 @@ public class GlobalConstants {
 
     public static final String ZK_CLIENT_PATH = "/consumers";
 
-    public static final String DEFAULT_LOCAL_HOST = "127.0.0.1";
+    public static final String DEFAULT_LOCAL_HOST = getHostAddress();
 
     public static final int DEFAULT_HRPC_PORT = 52710;
 
-    private static final String getHostAddress() {
+    public static final String getHostAddress() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {

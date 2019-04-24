@@ -13,7 +13,9 @@ public class DemoInterfaceImpl implements DemoInterface {
 
 
     @Override
-    public String hello(String hello) {
-        return "service :" + hello;
+    public DemoDTO hello(DemoDTO demo) {
+        DemoDTO demoDTO = new DemoDTO();
+        demoDTO.setName("Hello :" + demo.getName());
+        return demoDTO;
     }
 }

@@ -56,10 +56,10 @@ public class RpcServerAdapter implements BeanDefinitionRegistryPostProcessor {
             try {
                 RpcConnector connector = new NettyRpcConnector(address, port);
                 RpcProxy proxy = new RpcProxy(connector);
-                RpcClient rpcClient = RpcClient.builder()
-                        .proxy(proxy)
-                        .rpcConnector(connector).build();
-//                connector.start();
+//                RpcClient rpcClient = RpcClient.builder()
+//                        .proxy(proxy)
+//                        .rpcConnector(connector).build();
+                connector.start();
                 Class<?> serviceClazz = Class.forName(entry.getValue());
                 beanFactory.registerSingleton(entry.getKey(), new RpcServiceFactoryBean<>(proxy, serviceClazz));
             } catch (ClassNotFoundException e) {

@@ -1,5 +1,6 @@
 package com.hquery.hrpc.controller;
 
+import com.hquery.hrpc.export.DemoInterface;
 import com.trustlife.tis.mutual.claim.facade.FgwFileUploadFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +19,9 @@ import java.util.Map;
 @RequestMapping("/hrpc")
 public class HomeController {
 
-    @Autowired
-    private FgwFileUploadFacade fgwFileUploadFacade;
-
     @GetMapping("/test")
     public Map<String, Object> home() {
         Map<String, Object> result = new HashMap<>();
-        result.put("fgwFileUploadFacade", fgwFileUploadFacade);
         return result;
     }
 

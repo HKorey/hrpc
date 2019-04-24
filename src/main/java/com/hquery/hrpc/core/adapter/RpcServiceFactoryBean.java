@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
 
-    private Class serviceInterface;
+    private Class<T> serviceInterface;
 
     private RpcProxy proxy;
 
@@ -26,7 +26,7 @@ public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
      */
     private static final ConcurrentHashMap<Class, Object> OBJECT_CONTAINER = new ConcurrentHashMap<>();
 
-    public RpcServiceFactoryBean(RpcProxy proxy, Class serviceInterface) {
+    public RpcServiceFactoryBean(RpcProxy proxy, Class<T> serviceInterface) {
         this.proxy = proxy;
         this.serviceInterface = serviceInterface;
     }
