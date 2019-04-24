@@ -36,7 +36,7 @@ public class RpcServerAdapter implements BeanDefinitionRegistryPostProcessor {
     private String registryProtocol;
 
     @Value("${hrpc.route.type:random}")
-    private String routeType;
+    private String routeType = "random";
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {

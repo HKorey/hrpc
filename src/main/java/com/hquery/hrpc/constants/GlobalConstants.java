@@ -52,8 +52,6 @@ public class GlobalConstants {
 
 //	public static Serializer SERIALIZER = new ProtostuffSerializer() ;
 
-    public static final String DEFAULT_LOCAL_HOST = getHostAddress();
-
     public static final String ZK_ADDRESS = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183";
 
     public static final String ZK_REGISTRY_PATH = "/rpc/data";
