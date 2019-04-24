@@ -1,7 +1,6 @@
 package com.hquery.hrpc.core.connector;
 
-import com.hquery.hrpc.core.InvokeCallback;
-import com.hquery.hrpc.core.RpcFuture;
+import com.hquery.hrpc.core.invoker.InvokeCallback;
 import com.hquery.hrpc.core.model.RpcResponse;
 
 import java.util.Map;

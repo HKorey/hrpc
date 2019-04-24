@@ -1,14 +1,13 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.processor;
 
 import com.hquery.hrpc.constants.GlobalConstants;
+import com.hquery.hrpc.core.server.Exporter;
 import com.hquery.hrpc.init.AbstractServerLifeCycle;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author hquery.huang
@@ -42,7 +41,14 @@ public class RpcProcessor extends AbstractServerLifeCycle {
     @Override
     public void start() {
         this.executorService = new ThreadPoolExecutor(GlobalConstants.EXECUTOR_THREAD_COUNT, GlobalConstants.EXECUTOR_THREAD_COUNT,
-                0L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>());
+                0L, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(), new ThreadFactory() {
+            private AtomicLong count = new AtomicLong();
+
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread("HRPC-processing-" + count.incrementAndGet());
+            }
+        });
     }
 
     @Override

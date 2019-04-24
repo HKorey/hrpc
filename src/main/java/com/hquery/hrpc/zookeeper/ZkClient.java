@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 2019/3/25 10:08:16
  */
 @Slf4j
+@SuppressWarnings("all")
 public class ZkClient {
 
     private static final ExponentialBackoffRetry DEFAULT_RETRY_STRATEGY = new ExponentialBackoffRetry(1000, 3);
@@ -64,8 +65,7 @@ public class ZkClient {
      * @param retryStrategy client retry strategy
      */
     public static ZkClient newClient(String hosts, String namespace, ExponentialBackoffRetry retryStrategy) {
-        ZkClient zc = new ZkClient(hosts, namespace, retryStrategy);
-        return zc.start();
+        return new ZkClient(hosts, namespace, retryStrategy).start();
     }
 
     private ZkClient start() {
@@ -385,6 +385,27 @@ public class ZkClient {
             Stat pathStat = client.checkExists().forPath(path);
             if (pathStat == null) {
                 String nodePath = client.create().forPath(path, data);
+                return Strings.isNullOrEmpty(nodePath) ? false : true;
+            }
+        } catch (Exception e) {
+            handleConnectionLoss(e);
+            throw new ZkException(e);
+        }
+        return false;
+    }
+
+    /**
+     * Create a node if not exists
+     *
+     * @param path path
+     * @param data path data
+     * @return return true if create
+     */
+    public boolean createIfNotExists(String path, byte[] data, CreateMode createMode) {
+        try {
+            Stat pathStat = client.checkExists().forPath(path);
+            if (pathStat == null) {
+                String nodePath = client.create().withMode(createMode).forPath(path, data);
                 return Strings.isNullOrEmpty(nodePath) ? false : true;
             }
         } catch (Exception e) {

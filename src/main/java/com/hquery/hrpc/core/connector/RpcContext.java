@@ -1,6 +1,7 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.connector;
 
 import com.hquery.hrpc.constants.GlobalConstants;
+import com.hquery.hrpc.core.invoker.InvokeCallback;
 
 /**
  * @author hquery.huang

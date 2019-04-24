@@ -1,5 +1,6 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.acceptor;
 
+import com.hquery.hrpc.core.processor.RpcProcessor;
 import com.hquery.hrpc.core.model.RpcRequest;
 import com.hquery.hrpc.core.model.RpcResponse;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,8 +41,7 @@ public class AcceptorHandler extends SimpleChannelInboundHandler<RpcRequest> {
     }
 
     @Override
-    public void exceptionCaught(
-            ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.info("Unexpected exception from downstream.", cause);
         ctx.close();
     }

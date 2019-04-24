@@ -3,8 +3,6 @@ package com.hquery.hrpc.core.connector;
 import com.hquery.hrpc.core.model.RpcRequest;
 import com.hquery.hrpc.core.model.RpcResponse;
 
-import java.io.IOException;
-
 /**
  * Created by HQuery on 2018/12/1.
  */

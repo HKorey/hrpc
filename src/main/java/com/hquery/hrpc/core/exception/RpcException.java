@@ -1,5 +1,11 @@
-package com.hquery.hrpc.core;
+package com.hquery.hrpc.core.exception;
 
+/**
+ * RPC异常
+ *
+ * @author hquery
+ * 2019/4/3 20:10:30
+ */
 public class RpcException extends RuntimeException {
 
     private static final long serialVersionUID = 6238589897120159526L;
