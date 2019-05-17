@@ -5,6 +5,7 @@ import com.hquery.hrpc.core.route.RouteClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 记录客户端用到的服务
@@ -20,8 +21,17 @@ public class ServiceDiscovery {
         return SERVICE_ROUTE_CACHE.putIfAbsent(clazz, services) == null;
     }
 
-    public static List<RouteClient> getServices(Class<?> clazz) {
+    public static List<RouteClient> getService(Class<?> clazz) {
         return SERVICE_ROUTE_CACHE.get(clazz);
+    }
+
+    public static Set<Class<?>> getAllServices() {
+        return SERVICE_ROUTE_CACHE.keySet();
+    }
+
+    public void discover(Class clazz) {
+
+
     }
 
 }

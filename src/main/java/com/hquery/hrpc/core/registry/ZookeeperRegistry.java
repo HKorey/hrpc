@@ -1,5 +1,6 @@
 package com.hquery.hrpc.core.registry;
 
+import com.hquery.hrpc.core.route.RouteClient;
 import com.hquery.hrpc.utils.SpringContextUtil;
 import com.hquery.hrpc.zookeeper.HrpcZkClient;
 import com.hquery.hrpc.zookeeper.ZkClient;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * @author hquery.huang
@@ -22,7 +24,7 @@ import javax.annotation.PostConstruct;
 @DependsOn("springContextUtil")
 public class ZookeeperRegistry implements DefaultRegistry {
 
-    private volatile HrpcZkClient hrpcZkClient;
+    private HrpcZkClient hrpcZkClient;
 
     @Override
     public void registerServer(Class<?> clazz, String address, String weight) {
@@ -61,6 +63,18 @@ public class ZookeeperRegistry implements DefaultRegistry {
         // 服务子节点 - 具体客户端节点（临时节点）
         path += "/" + address;
         client.createIfNotExists(path, null, CreateMode.EPHEMERAL);
+    }
+
+    @Override
+    public List<RouteClient> getRemoteServers(Class<?> clazz) {
+        if (hrpcZkClient == null) {
+            connectClient();
+        }
+        ZkClient client = hrpcZkClient.getClient();
+        String path = ZkConstants.ZK_REGISTRY_PATH + "/" + clazz.getName() + "/" + ZkConstants.ZK_SERVER_PATH;
+//        client.gets();
+        // TODO
+        return null;
     }
 
     /**

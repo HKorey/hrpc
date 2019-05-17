@@ -15,13 +15,13 @@ import java.lang.reflect.Proxy;
  */
 public class RpcProxy {
 
-    private RpcConnector rpcConnector;
+//    private RpcConnector rpcConnector;
 
     private SnowflakeIdWorker idWorker = new SnowflakeIdWorker(GlobalConstants.WORKER_ID, GlobalConstants.DATA_CENTER_ID);
 
-    public RpcProxy(RpcConnector rpcConnector) {
-        this.rpcConnector = rpcConnector;
-    }
+//    public RpcProxy(RpcConnector rpcConnector) {
+//        this.rpcConnector = rpcConnector;
+//    }
 
     public Object getProxy(Class<?> clazz) {
         InvocationHandler invocationHandler = new InvocationHandler() {
@@ -33,11 +33,11 @@ public class RpcProxy {
                 request.setMethodName(method.getName());
                 request.setParameterTypes(method.getParameterTypes());
                 request.setParameters(args);
-                RpcResponse response = rpcConnector.invoke(request);
-                if (response == null) {
+//                RpcResponse response = rpcConnector.invoke(request);
+//                if (response == null) {
                     return null;
-                }
-                return response.getResult();
+//                }
+//                return response.getResult();
             }
         };
         return Proxy.newProxyInstance(RpcProxy.class.getClassLoader(), new Class[]{clazz}, invocationHandler);

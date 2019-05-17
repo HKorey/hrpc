@@ -1,5 +1,9 @@
 package com.hquery.hrpc.core.registry;
 
+import com.hquery.hrpc.core.route.RouteClient;
+
+import java.util.List;
+
 /**
  * @author hquery.huang
  * 2019/4/3 20:18:35
@@ -29,4 +33,14 @@ public interface DefaultRegistry {
      * 2019/4/3 20:26:45
      */
     void registerClient(Class<?> clazz, String address);
+
+    /**
+     * 获取远端服务
+     *
+     * @param clazz
+     * @return java.util.List<com.hquery.hrpc.core.route.RouteClient>
+     * @author hquery
+     * 2019/5/17 17:24:16
+     */
+    List<RouteClient> getRemoteServers(Class<?> clazz);
 }
