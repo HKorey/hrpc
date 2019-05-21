@@ -9,6 +9,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -22,8 +24,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class NettyRpcConnector implements RpcConnector {
 
+    @Getter
+    @Setter
     private String host;
 
+    @Getter
+    @Setter
     private int port;
 
     private Channel channel;
@@ -44,6 +50,7 @@ public class NettyRpcConnector implements RpcConnector {
         b.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
+//                .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
@@ -70,18 +77,6 @@ public class NettyRpcConnector implements RpcConnector {
     }
 
     @Override
-    public RpcConnector setHost(String host) {
-        this.host = host;
-        return this;
-    }
-
-    @Override
-    public RpcConnector setPort(int port) {
-        this.port = port;
-        return this;
-    }
-
-    @Override
     public void start() throws Exception {
         init();
     }
@@ -91,6 +86,11 @@ public class NettyRpcConnector implements RpcConnector {
         if (eventLoopGroup != null) {
             eventLoopGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public boolean isShutdown() {
+        return eventLoopGroup.isShutdown();
     }
 
     public RpcResponse send(RpcRequest request, RpcContext rpcContext) {
@@ -113,5 +113,17 @@ public class NettyRpcConnector implements RpcConnector {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("NettyRpcConnector{");
+        sb.append("host='").append(host).append('\'');
+        sb.append(", port=").append(port);
+        sb.append(", channel=").append(channel);
+        sb.append(", eventLoopGroup=").append(eventLoopGroup);
+        sb.append(", futureUtil=").append(futureUtil);
+        sb.append('}');
+        return sb.toString();
     }
 }

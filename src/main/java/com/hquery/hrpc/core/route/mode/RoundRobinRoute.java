@@ -2,6 +2,7 @@ package com.hquery.hrpc.core.route.mode;
 
 import com.hquery.hrpc.core.route.AbstractRpcRoute;
 import com.hquery.hrpc.core.route.RouteClient;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -11,11 +12,9 @@ import java.util.List;
  * @author hquery.huang
  * 2019/4/4 14:01:32
  */
+@NoArgsConstructor
 public class RoundRobinRoute extends AbstractRpcRoute {
 
-
-    public RoundRobinRoute() {
-    }
 
     @Override
     public RouteClient doRoute(List<RouteClient> routeClients) {

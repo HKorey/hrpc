@@ -1,7 +1,7 @@
 package com.hquery.hrpc.core.client;
 
 import com.hquery.hrpc.core.connector.RpcConnector;
-import com.hquery.hrpc.core.proxy.RpcProxy;
+import com.hquery.hrpc.core.proxy.RpcCommonProxy;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 public class RpcClient {
 
-    private RpcProxy proxy;
+    private RpcCommonProxy proxy;
 
     private RpcConnector rpcConnector;
 }

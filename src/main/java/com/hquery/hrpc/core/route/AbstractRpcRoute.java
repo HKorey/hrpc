@@ -22,7 +22,7 @@ public abstract class AbstractRpcRoute {
 
     public static final String ROUTE_TYPE_WEIGHT = "weight";
 
-    protected abstract RouteClient doRoute(List<RouteClient> routeClients);
+    public abstract RouteClient doRoute(List<RouteClient> routeClients);
 
     public static AbstractRpcRoute getInstance(String routeType) {
         if (ROUTE_TYPE_RANDOM.equals(routeType)) {

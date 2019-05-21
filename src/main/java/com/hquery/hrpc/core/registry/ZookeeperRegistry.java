@@ -1,25 +1,24 @@
 package com.hquery.hrpc.core.registry;
 
+import com.hquery.hrpc.constants.GlobalConstants;
+import com.hquery.hrpc.core.connector.NettyRpcConnector;
+import com.hquery.hrpc.core.discover.ServiceDiscovery;
 import com.hquery.hrpc.core.route.RouteClient;
 import com.hquery.hrpc.utils.SpringContextUtil;
-import com.hquery.hrpc.zookeeper.HrpcZkClient;
-import com.hquery.hrpc.zookeeper.ZkClient;
-import com.hquery.hrpc.zookeeper.ZkConstants;
-import com.hquery.hrpc.zookeeper.ZkException;
+import com.hquery.hrpc.zookeeper.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author hquery.huang
  * 2019/4/3 20:18:56
  */
+@Slf4j
 @Component
 @DependsOn("springContextUtil")
 public class ZookeeperRegistry implements DefaultRegistry {
@@ -66,15 +65,51 @@ public class ZookeeperRegistry implements DefaultRegistry {
     }
 
     @Override
-    public List<RouteClient> getRemoteServers(Class<?> clazz) {
+    public void refreshRemoteServers(Class<?> clazz) {
         if (hrpcZkClient == null) {
             connectClient();
         }
         ZkClient client = hrpcZkClient.getClient();
         String path = ZkConstants.ZK_REGISTRY_PATH + "/" + clazz.getName() + "/" + ZkConstants.ZK_SERVER_PATH;
-//        client.gets();
-        // TODO
-        return null;
+        client.newChildWatcher(path, new ChildListener() {
+            @Override
+            protected void onAdd(String path, byte[] data) {
+                try {
+                    ServiceDiscovery.addServer(clazz, getRouteClient(path));
+                } catch (Exception e) {
+                    log.error("error", e);
+                }
+            }
+
+            @Override
+            protected void onDelete(String path) {
+                try {
+                    ServiceDiscovery.delServer(clazz, getRouteClient(path));
+                } catch (Exception e) {
+                    log.error("error", e);
+                }
+            }
+
+            @Override
+            protected void onUpdate(String path, byte[] newData) {
+            }
+
+            private RouteClient getRouteClient(String path) {
+                String[] split = path.split(":");
+                return new RouteClient()
+                        .setConnector(new NettyRpcConnector(split[0].substring(split[0].lastIndexOf("/") + 1), GlobalConstants.DEFAULT_HRPC_PORT)).setWeight(Integer.parseInt(split[1]));
+            }
+        });
+        if (ServiceDiscovery.getServer(clazz) == null) {
+            throw new RuntimeException("获取到非法service : " + clazz.getName());
+        }
+        List<RouteClient> routeClients = client.gets(path).stream().map(p -> {
+            String[] split = p.split(":");
+            RouteClient routeClient = new RouteClient()
+                    .setConnector(new NettyRpcConnector(split[0].substring(split[0].lastIndexOf("/") + 1), GlobalConstants.DEFAULT_HRPC_PORT)).setWeight(Integer.parseInt(split[1]));
+            return routeClient;
+        }).collect(Collectors.toList());
+        ServiceDiscovery.resetRouteClients(clazz, routeClients);
     }
 
     /**
@@ -91,5 +126,4 @@ public class ZookeeperRegistry implements DefaultRegistry {
         }
         hrpcZkClient = SpringContextUtil.getBean(HrpcZkClient.class);
     }
-
 }

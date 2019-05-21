@@ -42,5 +42,5 @@ public interface DefaultRegistry {
      * @author hquery
      * 2019/5/17 17:24:16
      */
-    List<RouteClient> getRemoteServers(Class<?> clazz);
+    void refreshRemoteServers(Class<?> clazz);
 }

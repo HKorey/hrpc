@@ -3,7 +3,6 @@ package com.hquery.hrpc.core.registry;
 import com.hquery.hrpc.constants.GlobalConstants;
 import com.hquery.hrpc.core.discover.ServiceDiscovery;
 import com.hquery.hrpc.core.exception.RpcException;
-import com.hquery.hrpc.core.server.RemoteServerWrapper;
 import com.hquery.hrpc.init.AbstractServerLifeCycle;
 import com.hquery.hrpc.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author hquery.huang
- * 2019/5/17 16:33:04
+ * 2019/5/21 11:25:41
  */
 @Slf4j
 @Component
-public class InitRegistryProtocol extends AbstractServerLifeCycle {
+public class InitRemoteServiceConnection extends AbstractServerLifeCycle {
 
     @Value("${hrpc.server.registry.protocol.client:zookeeper}")
     private String registryProtocol;
@@ -32,8 +31,6 @@ public class InitRegistryProtocol extends AbstractServerLifeCycle {
         if (registry == null) {
             throw new RpcException("未找到注册协议，请配置hrpc.server.registry.protocol.client");
         }
-        for (Class clazz : ServiceDiscovery.getAllServices()) {
-            registry.registerClient(clazz, GlobalConstants.DEFAULT_LOCAL_HOST);
-        }
+        ServiceDiscovery.getAllServices().forEach(clazz -> registry.refreshRemoteServers(clazz));
     }
 }

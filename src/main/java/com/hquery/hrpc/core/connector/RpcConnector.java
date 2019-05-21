@@ -39,6 +39,24 @@ public interface RpcConnector {
     RpcConnector setPort(int port);
 
     /**
+     * 获取域名
+     *
+     * @return void
+     * @author hquery
+     * 2019/4/2 18:03:44
+     */
+    String getHost();
+
+    /**
+     * 获取端口
+     *
+     * @return void
+     * @author hquery
+     * 2019/4/2 18:03:48
+     */
+    int getPort();
+
+    /**
      * 开启链接
      *
      * @param
@@ -57,4 +75,11 @@ public interface RpcConnector {
      * 2019/4/2 18:03:57
      */
     void stop() throws Exception;
+
+    /**
+     * Returns {@code true} if this executor has been shut down.
+     *
+     * @return {@code true} if this executor has been shut down
+     */
+    boolean isShutdown();
 }

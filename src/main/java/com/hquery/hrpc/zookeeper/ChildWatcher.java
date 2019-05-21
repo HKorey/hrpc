@@ -41,7 +41,6 @@ public class ChildWatcher {
                         return;
                     }
                     String path = childData.getPath();
-
                     switch (eventType) {
                         case CHILD_ADDED:
                             listener.onAdd(path, childData.getData());
@@ -60,7 +59,6 @@ public class ChildWatcher {
                 }
             });
         }
-
         try {
             this.cacher.start();
         } catch (Exception e) {

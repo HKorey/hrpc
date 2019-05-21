@@ -1,7 +1,9 @@
 package com.hquery.hrpc.core.adapter;
 
 import com.hquery.hrpc.core.discover.ServiceDiscovery;
+import com.hquery.hrpc.core.proxy.RpcClusterProxy;
 import com.hquery.hrpc.core.proxy.RpcProxy;
+import com.hquery.hrpc.core.server.RemoteServerWrapper;
 import com.hquery.hrpc.utils.RpcConfUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -10,7 +12,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -35,22 +36,17 @@ public class RpcServerAdapter implements BeanDefinitionRegistryPostProcessor {
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-//        AbstractRpcRoute route = AbstractRpcRoute.getInstance(routeType);
-
         for (Map.Entry<String, String> entry : RpcConfUtil.getConfCache().entrySet()) {
             log.info("Server name:{}, class:{}", entry.getKey(), entry.getValue());
-//            RpcConnector connector = new NettyRpcConnector("", 1234);
-            RpcProxy proxy = new RpcProxy();
-//            RpcClusterProxy proxy = new RpcClusterProxy(route);
-//            Class<?> serviceClazz;
+            RpcProxy proxy = new RpcClusterProxy();
             try {
                 Class<?> service = Class.forName(entry.getValue());
-                if (!ServiceDiscovery.putService(service, new ArrayList<>())) {
+                RemoteServerWrapper wrapper = new RemoteServerWrapper(service);
+                if (!ServiceDiscovery.putService(service, wrapper)) {
                     log.error("配置文件出现重复类配置 {}", entry.getValue());
                     continue;
                 }
                 beanFactory.registerSingleton(entry.getKey(), new RpcServiceFactoryBean(proxy, service));
-//                serviceClazz = service;
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Can not resolved class " + entry.getValue(), e);
             }

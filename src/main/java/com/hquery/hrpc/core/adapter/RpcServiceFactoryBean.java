@@ -1,6 +1,7 @@
 package com.hquery.hrpc.core.adapter;
 
 import com.hquery.hrpc.core.proxy.RpcProxy;
+import com.hquery.hrpc.core.server.RemoteServerWrapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
 
-    private Class<T> serviceInterface;
+    private Class<?> serviceInterface;
 
     @Getter
     private RpcProxy proxy;
@@ -30,7 +31,7 @@ public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
      */
     private static final ConcurrentHashMap<Class, Object> OBJECT_CONTAINER = new ConcurrentHashMap<>();
 
-    public RpcServiceFactoryBean(RpcProxy proxy, Class<T> serviceInterface) {
+    public RpcServiceFactoryBean(RpcProxy proxy, Class<?> serviceInterface) {
         this.proxy = proxy;
         this.serviceInterface = serviceInterface;
     }
@@ -38,7 +39,7 @@ public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
     @Nullable
     @Override
     public T getObject() throws Exception {
-        Object object = OBJECT_CONTAINER.get(this.serviceInterface);
+        Object object = OBJECT_CONTAINER.get(serviceInterface);
         if (object != null) {
             return (T) object;
         }
@@ -46,13 +47,13 @@ public class RpcServiceFactoryBean<T> implements FactoryBean<T> {
     }
 
     private synchronized Object createObject() {
-        Object object = OBJECT_CONTAINER.get(this.serviceInterface);
+        Object object = OBJECT_CONTAINER.get(serviceInterface);
         if (object != null) {
             return object;
         }
         // 构建代理对象
-        Object proxyObject = proxy.getProxy(this.serviceInterface);
-        OBJECT_CONTAINER.put(this.serviceInterface, proxyObject);
+        Object proxyObject = proxy.getProxy(serviceInterface);
+        OBJECT_CONTAINER.put(serviceInterface, proxyObject);
         return proxyObject;
     }
 

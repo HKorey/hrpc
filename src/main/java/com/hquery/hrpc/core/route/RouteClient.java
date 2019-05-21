@@ -3,6 +3,8 @@ package com.hquery.hrpc.core.route;
 import com.hquery.hrpc.core.connector.RpcConnector;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * @author hquery.huang
@@ -16,4 +18,5 @@ public class RouteClient {
 
     private int weight;
 
+    private boolean down = false;
 }
