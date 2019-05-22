@@ -1,6 +1,5 @@
 package com.hquery.hrpc.core.registry;
 
-import com.hquery.hrpc.constants.GlobalConstants;
 import com.hquery.hrpc.core.connector.NettyRpcConnector;
 import com.hquery.hrpc.core.discover.ServiceDiscovery;
 import com.hquery.hrpc.core.route.RouteClient;
@@ -39,7 +38,7 @@ public class ZookeeperRegistry implements DefaultRegistry {
         String path = ZkConstants.ZK_REGISTRY_PATH + "/" + clazz.getName();
         client.createIfNotExists(path, null, CreateMode.PERSISTENT);
         // 服务子节点 - 服务器列表（持久化）
-        path += "/" + ZkConstants.ZK_SERVER_PATH;
+        path += ZkConstants.ZK_SERVER_PATH;
         client.createIfNotExists(path, null, CreateMode.PERSISTENT);
         // 服务子节点 - 具体服务节点（临时节点）
         path += "/" + address + ":" + weight;
@@ -57,7 +56,7 @@ public class ZookeeperRegistry implements DefaultRegistry {
         String path = ZkConstants.ZK_REGISTRY_PATH + "/" + clazz.getName();
         client.createIfNotExists(path, null, CreateMode.PERSISTENT);
         // 服务子节点 - 客户端列表（持久化）
-        path += "/" + ZkConstants.ZK_CLIENT_PATH;
+        path += ZkConstants.ZK_CLIENT_PATH;
         client.createIfNotExists(path, null, CreateMode.PERSISTENT);
         // 服务子节点 - 具体客户端节点（临时节点）
         path += "/" + address;
@@ -70,7 +69,7 @@ public class ZookeeperRegistry implements DefaultRegistry {
             connectClient();
         }
         ZkClient client = hrpcZkClient.getClient();
-        String path = ZkConstants.ZK_REGISTRY_PATH + "/" + clazz.getName() + "/" + ZkConstants.ZK_SERVER_PATH;
+        String path = ZkConstants.ZK_REGISTRY_PATH + "/" + clazz.getName() + ZkConstants.ZK_SERVER_PATH;
         client.newChildWatcher(path, new ChildListener() {
             @Override
             protected void onAdd(String path, byte[] data) {
@@ -97,18 +96,22 @@ public class ZookeeperRegistry implements DefaultRegistry {
             private RouteClient getRouteClient(String path) {
                 String[] split = path.split(":");
                 return new RouteClient()
-                        .setConnector(new NettyRpcConnector(split[0].substring(split[0].lastIndexOf("/") + 1), GlobalConstants.DEFAULT_HRPC_PORT)).setWeight(Integer.parseInt(split[1]));
+                        .setConnector(new NettyRpcConnector(split[0].substring(split[0].lastIndexOf("/") + 1), Integer.parseInt(split[1]))).setWeight(Integer.parseInt(split[2]));
             }
         });
+
         if (ServiceDiscovery.getServer(clazz) == null) {
             throw new RuntimeException("获取到非法service : " + clazz.getName());
         }
-        List<RouteClient> routeClients = client.gets(path).stream().map(p -> {
-            String[] split = p.split(":");
-            RouteClient routeClient = new RouteClient()
-                    .setConnector(new NettyRpcConnector(split[0].substring(split[0].lastIndexOf("/") + 1), GlobalConstants.DEFAULT_HRPC_PORT)).setWeight(Integer.parseInt(split[1]));
-            return routeClient;
-        }).collect(Collectors.toList());
+        List<RouteClient> routeClients = client.gets(path)
+                .stream()
+                .map(p -> {
+                    String[] split = p.split(":");
+                    RouteClient routeClient = new RouteClient();
+                    NettyRpcConnector nettyRpcConnector = new NettyRpcConnector(split[0].substring(split[0].lastIndexOf("/") + 1), Integer.parseInt(split[1]));
+                    routeClient.setConnector(nettyRpcConnector).setWeight(Integer.parseInt(split[1]));
+                    return routeClient;
+                }).collect(Collectors.toList());
         ServiceDiscovery.resetRouteClients(clazz, routeClients);
     }
 

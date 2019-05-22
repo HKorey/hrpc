@@ -40,4 +40,14 @@ public class RpcResponse extends RpcCommand {
     public void setResult(Object result) {
         this.result = result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RpcResponse{");
+        sb.append("requestId=").append(requestId);
+        sb.append(", error=").append(error);
+        sb.append(", result=").append(result);
+        sb.append('}');
+        return sb.toString();
+    }
 }

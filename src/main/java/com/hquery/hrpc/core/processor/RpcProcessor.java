@@ -46,7 +46,7 @@ public class RpcProcessor extends AbstractServerLifeCycle {
 
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread("HRPC-processing-" + count.incrementAndGet());
+                return new Thread(r, "HRPC-processing-" + count.incrementAndGet());
             }
         });
     }

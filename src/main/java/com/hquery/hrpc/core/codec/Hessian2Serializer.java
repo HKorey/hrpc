@@ -31,6 +31,7 @@ public class Hessian2Serializer implements Serializer {
     public <T> T deserialize(byte[] data, Class<T> clazz) throws IOException {
         ByteArrayInputStream bis = new ByteArrayInputStream(data);
         Hessian2Input input = new Hessian2Input(bis);
+        input.setSerializerFactory(serializerFactory);
         return (T) input.readObject(clazz);
     }
 }

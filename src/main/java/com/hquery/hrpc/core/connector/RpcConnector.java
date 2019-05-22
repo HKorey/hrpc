@@ -2,6 +2,8 @@ package com.hquery.hrpc.core.connector;
 
 import com.hquery.hrpc.core.model.RpcRequest;
 import com.hquery.hrpc.core.model.RpcResponse;
+import io.netty.util.concurrent.EventExecutor;
+import io.netty.util.concurrent.EventExecutorGroup;
 
 /**
  * Created by HQuery on 2018/12/1.
@@ -82,4 +84,10 @@ public interface RpcConnector {
      * @return {@code true} if this executor has been shut down
      */
     boolean isShutdown();
+
+    /**
+     * Returns {@code true} if and only if all {@link EventExecutor}s managed by this {@link EventExecutorGroup}
+     * are being {@linkplain #shutdownGracefully() shut down gracefuclly} or was {@linkplain #isShutdown() shut down}.
+     */
+    boolean isShuttingDown();
 }

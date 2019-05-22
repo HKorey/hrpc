@@ -25,11 +25,9 @@ import java.util.concurrent.TimeUnit;
 public class NettyRpcConnector implements RpcConnector {
 
     @Getter
-    @Setter
     private String host;
 
     @Getter
-    @Setter
     private int port;
 
     private Channel channel;
@@ -77,6 +75,18 @@ public class NettyRpcConnector implements RpcConnector {
     }
 
     @Override
+    public RpcConnector setHost(String host) {
+        this.host = host;
+        return this;
+    }
+
+    @Override
+    public RpcConnector setPort(int port) {
+        this.port = port;
+        return this;
+    }
+
+    @Override
     public void start() throws Exception {
         init();
     }
@@ -91,6 +101,11 @@ public class NettyRpcConnector implements RpcConnector {
     @Override
     public boolean isShutdown() {
         return eventLoopGroup.isShutdown();
+    }
+
+    @Override
+    public boolean isShuttingDown() {
+        return eventLoopGroup.isShuttingDown();
     }
 
     public RpcResponse send(RpcRequest request, RpcContext rpcContext) {

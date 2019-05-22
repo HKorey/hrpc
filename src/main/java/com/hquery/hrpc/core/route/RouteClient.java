@@ -18,5 +18,9 @@ public class RouteClient {
 
     private int weight;
 
-    private boolean down = false;
+    private boolean alive;
+
+    public RouteClient() {
+        this.alive = false;
+    }
 }

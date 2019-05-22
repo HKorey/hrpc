@@ -6,6 +6,5 @@ package com.hquery.hrpc.export;
  */
 public interface DemoInterface {
 
-    DemoDTO hello(DemoDTO hello);
-
+    String hello(String name);
 }

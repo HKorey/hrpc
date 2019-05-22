@@ -30,17 +30,42 @@ public class ServiceDiscovery {
 
     public static synchronized void resetRouteClients(Class<?> clazz, List<RouteClient> clients) {
         RemoteServerWrapper wrapper = SERVICE_ROUTE_CACHE.get(clazz);
-        // 关闭 TCP链接
+        // 关闭现有的所有TCP链接
         List<RouteClient> routeClients = wrapper.getRouteClients();
-        for (RouteClient routeClient : routeClients) {
-            routeClient.getConnector();
-        }
+        routeClients.stream().filter(routeClient -> routeClient.isAlive()
+                && !routeClient.getConnector().isShutdown()
+                && !routeClient.getConnector().isShuttingDown()).forEach(routeClient -> {
+            try {
+                routeClient.getConnector().stop();
+                routeClient.setAlive(false);
+            } catch (Exception e) {
+                log.error("Stop connection fail : {}", routeClient.getConnector(), e);
+            }
+        });
+        // 设置重置新连接
+        clients.stream().forEach(routeClient -> {
+            try {
+                routeClient.getConnector().start();
+                routeClient.setAlive(true);
+            } catch (Exception e) {
+                log.error("Start connection fail : {}", routeClient.getConnector(), e);
+            }
+        });
         wrapper.setRouteClients(clients);
     }
 
     public static synchronized void addServer(Class<?> clazz, RouteClient client) throws Exception {
         RemoteServerWrapper wrapper = SERVICE_ROUTE_CACHE.get(clazz);
+        List<RouteClient> routeClients = wrapper.getRouteClients();
+        long count = routeClients.stream()
+                .filter(routeClient -> client.getConnector().getHost().equals(routeClient.getConnector().getHost()) && client.getConnector().getPort() == routeClient.getConnector().getPort())
+                .filter(routeClient -> routeClient.isAlive())
+                .count();
+        if (count > 0) {
+            return;
+        }
         client.getConnector().start();
+        client.setAlive(true);
         wrapper.getRouteClients().add(client);
     }
 
@@ -49,11 +74,14 @@ public class ServiceDiscovery {
         List<RouteClient> routeClients = wrapper.getRouteClients();
         for (Iterator<RouteClient> item = routeClients.iterator(); item.hasNext(); ) {
             RouteClient rc = item.next();
+            if (!rc.isAlive()) {
+                continue;
+            }
             if (client.getConnector().getHost().equals(rc.getConnector().getHost())
                     && client.getConnector().getPort() == rc.getConnector().getPort()) {
 //                item.remove();
-                rc.setDown(true);
                 rc.getConnector().stop();
+                rc.setAlive(false);
             }
         }
     }

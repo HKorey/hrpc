@@ -8,6 +8,7 @@ import com.hquery.hrpc.init.AbstractServerLifeCycle;
 import com.hquery.hrpc.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -21,6 +22,7 @@ import java.io.IOException;
  */
 @Slf4j
 @Component
+@DependsOn({"exporter", "springContextUtil"})
 public class RpcServer extends AbstractServerLifeCycle {
 
     public static final int DEFAULT_WEIGHT = 100;
@@ -36,7 +38,7 @@ public class RpcServer extends AbstractServerLifeCycle {
     @Value("${hrpc.server.registry.protocol.client:zookeeper}")
     private String registryProtocol;
 
-    private int weight;
+    private int weight = DEFAULT_WEIGHT;
 
     public void export(Class<?> clazz, Object obj) {
         export(clazz, obj, null);
@@ -56,7 +58,6 @@ public class RpcServer extends AbstractServerLifeCycle {
     @Override
     public void start() {
         log.info("获取本地服务IP【{}:{}】", GlobalConstants.DEFAULT_LOCAL_HOST, GlobalConstants.DEFAULT_HRPC_PORT);
-        this.weight = DEFAULT_WEIGHT;
         try {
             nettyRpcAcceptor.init();
         } catch (InterruptedException e) {
