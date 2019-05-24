@@ -41,12 +41,7 @@ public class AppLifeCycle implements DisposableBean {
         }
         lifeCycles = beansOfType.entrySet()
                 .stream()
-                .sorted(new Comparator<Map.Entry<String, AbstractServerLifeCycle>>() {
-                    @Override
-                    public int compare(Map.Entry<String, AbstractServerLifeCycle> o1, Map.Entry<String, AbstractServerLifeCycle> o2) {
-                        return Integer.compare(o1.getValue().order(), o2.getValue().order());
-                    }
-                })
+                .sorted(Comparator.comparingInt(o -> o.getValue().order()))
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
     }

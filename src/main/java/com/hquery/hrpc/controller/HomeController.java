@@ -1,6 +1,5 @@
 package com.hquery.hrpc.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.hquery.hrpc.export.DemoDTO;
 import com.hquery.hrpc.export.DemoInterface;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ public class HomeController {
         Map<String, Object> result = new HashMap<>();
         DemoDTO demoDTO = new DemoDTO();
         demoDTO.setName("124214");
-        result.put("result name", demoInterface.hello("124214"));
+        result.put("result name", demoInterface.hello(demoDTO).getName());
         return result;
     }
 
